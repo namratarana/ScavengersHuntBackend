@@ -30,20 +30,20 @@ const create = async(req,res) =>
             service:"gmail",
              // true for 465, false for other ports
             auth: {
-              user: process.env.emailID, // generated ethereal user
-              pass: process.env.password, // generated ethereal password
+              user: process.env.EMAILID, // generated ethereal user
+              pass: process.env.pw, // generated ethereal password
             },
           });
         let mailOption={
-          from: process.env.emailID, // sender address
+          from: process.env.EMAILID, // sender address
           to: req.body.email, // list of receivers
           subject: "Welcome mailer", // Subject line
         text:"UserName:"+ req.body.user+ "Password: "+ req.body.password
         }
           // send mail with defined transport object
             await transporter.sendMail(mailOption)
-            .then((data)=>{console.log("Emai Sent")})
-            .catch((error)=>{console.log(error)})
+            .then((data)=>{console.log("Email Sent")})
+            .catch((error)=>{console.log('error')})
              
          
           // from: "Prateek Jain", // sender address
@@ -156,7 +156,8 @@ const loginOTP = async(req,res)=>
     const _OTP = Math.floor(1000 + Math.random() * 9000);
     try
     {
-        console.log(req.body.email);
+        console.log(process.env.EMAILID );
+        console.log(process.env.pw);
         const salt =  await bcrypt.genSalt(10);
         const hashOTP = await bcrypt.hash(_OTP.toString(), salt);
         const dt = new Date();
@@ -172,13 +173,15 @@ const loginOTP = async(req,res)=>
         let transporter = nodemailer.createTransport({
         service:"gmail",
          // true for 465, false for other ports
-        auth: {
-          user: process.env.emailID, // generated ethereal user
-          pass: process.env.password// generated ethereal password
+        auth: 
+        {
+          user: process.env.EMAILID, 
+          pass: process.env.pw    
         },
       });
-    let mailOption={
-      from: process.env.emailID, // sender address
+    let mailOption=
+    {
+      from: process.env.EMAILID,
       to: req.body.email, // list of receivers
       subject: "Welcome mailer", // Subject line
         text:"otp is :"+ _OTP

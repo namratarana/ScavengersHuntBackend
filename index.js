@@ -15,11 +15,6 @@ Dotenv.config();
 const app = Express();
 app.set('trust proxy', 1);
 app.use(Session({
-  cookie: {
-    sameSite:'none',
-    secure: true,
-    maxAge: 86400000
-  },
   secret: "secretKey", 
   resave: true,
   saveUninitialized: true
@@ -42,18 +37,18 @@ Passport.use(new Github(
     return cb(null, profile) 
   }));
 
-// Passport.use(new Twitter(
-//   {
-//     consumerKey : process.env.TWITTER_CLIENT_ID,
-//     consumerSecret : process.env.TWITTER_CLIENT_SECRET,
-//     callbackURL : "/auth/twitter/callback"
-//   },async(accessToken, refreshToken, profile, cb) =>
-//   {
-//     console.log(profile);
-//     const token = await JWT.sign({_id:profile.id},process.env.PRIVATE_KEY, {expiresIn:'24h'});
-//     user = {token: token};
-//     return cb(null, profile) 
-//   }));
+Passport.use(new Twitter(
+  {
+    consumerKey : process.env.TWITTER_CLIENT_ID,
+    consumerSecret : process.env.TWITTER_CLIENT_SECRET,
+    callbackURL : "/auth/twitter/callback"
+  },async(accessToken, refreshToken, profile, cb) =>
+  {
+    console.log(profile);
+    const token = await JWT.sign({_id:profile.id},process.env.PRIVATE_KEY, {expiresIn:'24h'});
+    user = {token: token};
+    return cb(null, profile) 
+  }));
 
 app.use(cors());
 app.use(Express.json());
@@ -74,14 +69,14 @@ app.get('/',(req,res)=>{res.send('Welcome')})
 app.get('/getToken', (req,res)=>{res.send(user)})
 app.get('/logout',(req,res)=>{user = {}; res.send(user)})
 
-// Mongoose.connect(process.env.MONGO_DB_URL, 
-//     {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//       useCreateIndex: true,
-//       useFindAndModify: false
-//      }
-// )
+Mongoose.connect(process.env.MONGO_DB_URL, 
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false
+     }
+)
 app.listen(process.env.PORT|| 5000, ()=>{console.log(" server is listening at 5000")});
 
 //app.post("/user/",(req,res)=>{console.log(req.body)})
